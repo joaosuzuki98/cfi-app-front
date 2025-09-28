@@ -50,6 +50,14 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 8,
     },
 
+    // Color
+    blackBgContainer: {
+        backgroundColor: "#000",
+        flex: 1,
+        padding: 20,
+        paddingTop: 60,
+    },
+
     // Spacing
     marginTop1: {
         marginTop: 10,

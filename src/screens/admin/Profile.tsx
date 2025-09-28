@@ -5,11 +5,11 @@ import CustomerPersonalInfoCard from '../../components/customer/CustomerPersonal
 import CustomerPasswordDetailsCard from '../../components/customer/CustomerPasswordDetailsCard'
 import { globalStyles } from '../../styles/styles'
 
-function Profile() {
+function Profile({ setUser }) {
     return (
         <Layout title='Seu perfil'>
             <View style={globalStyles.marginTop3}>
-               <CustomerDetailsCard />
+               <CustomerDetailsCard setUser={setUser} />
             </View>
 
             <View style={globalStyles.marginTop3}>
