@@ -6,6 +6,14 @@ function CustomerList({ customers }) {
     const [filteredCustomers, setFilteredCustomers] = useState([]);
     const [searchName, setSearchName] = useState('');
     const [searchEmail, setSearchEmail] = useState('');
+    const [searchState, setSearchState] = useState('');
+    const [searchCity, setSearchCity] = useState('');
+    const [searchNeighborhood, setSearchNeighborhood] = useState('');
+    const [searchValueStart, setSearchValueStart] = useState('');
+    const [searchValueLimit, setSearchValueLimit] = useState('');
+    const [searchGarageNumber, setSearchGarageNumber] = useState('');
+    const [searchPaymentMethod, setSearchPaymentMethod] = useState('');
+    const [searchPropertyType, setSearchPropertyType] = useState('');
 
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
@@ -14,13 +22,36 @@ function CustomerList({ customers }) {
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        const filtered = customers.filter(c =>
-            c.name.toLowerCase().includes(searchName.toLowerCase()) &&
-            c.email.toLowerCase().includes(searchEmail.toLowerCase())
-        );
+        const filtered = customers.filter(c => {
+            const ip = c.investmentProfile;
+
+            const matchName = c.name.toLowerCase().includes(searchName.toLowerCase());
+            const matchEmail = c.email.toLowerCase().includes(searchEmail.toLowerCase());
+
+            const matchState = !searchState || ip?.regionsOfInterest?.some(r => r.state.toLowerCase().includes(searchState.toLowerCase()));
+            const matchCity = !searchCity || ip?.regionsOfInterest?.some(r => r.city.toLowerCase().includes(searchCity.toLowerCase()));
+            const matchNeighborhood = !searchNeighborhood || ip?.regionsOfInterest?.some(r => r.neighborhood.toLowerCase().includes(searchNeighborhood.toLowerCase()));
+            const matchValueStart = !searchValueStart || ip?.valueStart?.includes(searchValueStart);
+            const matchValueLimit = !searchValueLimit || ip?.valueLimit?.includes(searchValueLimit);
+            const matchGarageNumber = !searchGarageNumber || ip?.garageNumber?.toString() === searchGarageNumber;
+            const matchPaymentMethod = !searchPaymentMethod || ip?.paymentMethods?.some(p => p.name.toLowerCase().includes(searchPaymentMethod.toLowerCase()));
+            const matchPropertyType = !searchPropertyType || ip?.propertyTypes?.some(p => p.name.toLowerCase().includes(searchPropertyType.toLowerCase()));
+
+            return matchName && matchEmail &&
+                matchState && matchCity && matchNeighborhood &&
+                matchValueStart && matchValueLimit &&
+                matchGarageNumber && matchPaymentMethod && matchPropertyType;
+        });
+
         setFilteredCustomers(filtered);
         setCurrentPage(1);
-    }, [searchName, searchEmail, customers]);
+    }, [
+        searchName, searchEmail,
+        searchState, searchCity, searchNeighborhood,
+        searchValueStart, searchValueLimit,
+        searchGarageNumber, searchPaymentMethod, searchPropertyType,
+        customers
+    ]);
 
     const paginatedCustomers = filteredCustomers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -31,61 +62,111 @@ function CustomerList({ customers }) {
 
     return (
         <View style={[globalStyles.flex1, { padding: 10 }]}>
-            <View style={{ marginBottom: 10 }}>
-                <TextInput
-                    style={globalStyles.input}
-                    placeholder="Filtrar por nome"
-                    value={searchName}
-                    onChangeText={setSearchName}
-                />
-                <TextInput
-                    style={[globalStyles.input, { marginTop: 10 }]}
-                    placeholder="Filtrar por email"
-                    value={searchEmail}
-                    onChangeText={setSearchEmail}
-                />
-            </View>
+            <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+                <View style={{ marginBottom: 10, flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
+                    <TextInput
+                        style={[globalStyles.input, { flex: 1, minWidth: "48%" }]}
+                        placeholder="Filtrar por nome"
+                        value={searchName}
+                        onChangeText={setSearchName}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { flex: 1, minWidth: "48%" }]}
+                        placeholder="Filtrar por email"
+                        value={searchEmail}
+                        onChangeText={setSearchEmail}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { flex: 1, minWidth: "48%" }]}
+                        placeholder="Filtrar por estado"
+                        value={searchState}
+                        onChangeText={setSearchState}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { flex: 1, minWidth: "48%" }]}
+                        placeholder="Filtrar por cidade"
+                        value={searchCity}
+                        onChangeText={setSearchCity}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { flex: 1, minWidth: "48%" }]}
+                        placeholder="Filtrar por bairro"
+                        value={searchNeighborhood}
+                        onChangeText={setSearchNeighborhood}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { flex: 1, minWidth: "48%" }]}
+                        placeholder="Valor Inicial"
+                        value={searchValueStart}
+                        onChangeText={setSearchValueStart}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { flex: 1, minWidth: "48%" }]}
+                        placeholder="Valor Limite"
+                        value={searchValueLimit}
+                        onChangeText={setSearchValueLimit}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { marginTop: 5 }]}
+                        placeholder="Vagas"
+                        value={searchGarageNumber}
+                        onChangeText={setSearchGarageNumber}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { marginTop: 5 }]}
+                        placeholder="Método de Pagamento"
+                        value={searchPaymentMethod}
+                        onChangeText={setSearchPaymentMethod}
+                    />
+                    <TextInput
+                        style={[globalStyles.input, { marginTop: 5 }]}
+                        placeholder="Tipo de Imóvel"
+                        value={searchPropertyType}
+                        onChangeText={setSearchPropertyType}
+                    />
+                </View>
 
-            <View style={styles.tableHeader}>
-                <Text style={styles.cell}>Nome</Text>
-                <Text style={styles.cell}>Email</Text>
-                <Text style={styles.cell}>Telefone</Text>
-                <Text style={styles.cell}>Investimento</Text>
-            </View>
+                <View style={styles.tableHeader}>
+                    <Text style={styles.cell}>Nome</Text>
+                    <Text style={styles.cell}>Email</Text>
+                    <Text style={styles.cell}>Telefone</Text>
+                    <Text style={styles.cell}>Investimento</Text>
+                </View>
 
-            <FlatList
-                data={paginatedCustomers}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <Pressable style={styles.tableRow} onPress={() => openModal(item)}>
-                        <Text style={styles.cell}>{item.name}</Text>
-                        <Text style={styles.cell}>{item.email}</Text>
-                        <Text style={styles.cell}>{item.phone}</Text>
-                        <Text style={styles.cell}>{item.investmentProfile ? "Sim" : "Não"}</Text>
+                <FlatList
+                    data={paginatedCustomers}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <Pressable style={styles.tableRow} onPress={() => openModal(item)}>
+                            <Text style={styles.cell}>{item.name}</Text>
+                            <Text style={styles.cell}>{item.email}</Text>
+                            <Text style={styles.cell}>{item.phone}</Text>
+                            <Text style={styles.cell}>{item.investmentProfile ? "Sim" : "Não"}</Text>
+                        </Pressable>
+                    )}
+                    ListEmptyComponent={
+                        <Text style={{ color: "#aaa", textAlign: "center", marginTop: 20 }}>
+                            Nenhum cliente encontrado
+                        </Text>
+                    }
+                />
+
+                <View style={styles.pagination}>
+                    <Pressable
+                        onPress={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                        style={[styles.pageButton, currentPage === 1 && { opacity: 0.5 }]}
+                    >
+                        <Text style={{ color: "#fff" }}>Anterior</Text>
                     </Pressable>
-                )}
-                ListEmptyComponent={
-                    <Text style={{ color: "#aaa", textAlign: "center", marginTop: 20 }}>
-                        Nenhum cliente encontrado
-                    </Text>
-                }
-            />
-
-            <View style={styles.pagination}>
-                <Pressable
-                    onPress={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                    style={[styles.pageButton, currentPage === 1 && { opacity: 0.5 }]}
-                >
-                    <Text style={{ color: "#fff" }}>Anterior</Text>
-                </Pressable>
-                <Text style={{ color: "#fff", marginHorizontal: 10 }}>{currentPage}</Text>
-                <Pressable
-                    onPress={() => setCurrentPage(p => (p * pageSize < filteredCustomers.length ? p + 1 : p))}
-                    style={[styles.pageButton, currentPage * pageSize >= filteredCustomers.length && { opacity: 0.5 }]}
-                >
-                    <Text style={{ color: "#fff" }}>Próximo</Text>
-                </Pressable>
-            </View>
+                    <Text style={{ color: "#fff", marginHorizontal: 10 }}>{currentPage}</Text>
+                    <Pressable
+                        onPress={() => setCurrentPage(p => (p * pageSize < filteredCustomers.length ? p + 1 : p))}
+                        style={[styles.pageButton, currentPage * pageSize >= filteredCustomers.length && { opacity: 0.5 }]}
+                    >
+                        <Text style={{ color: "#fff" }}>Próximo</Text>
+                    </Pressable>
+                </View>
+            </ScrollView>
 
             <Modal
                 visible={modalVisible}
