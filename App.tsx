@@ -11,6 +11,8 @@ import Dashboard from './src/screens/admin/Dashboard'
 import Profile from './src/screens/admin/Profile'
 import Opportunity from './src/screens/admin/Opportunity'
 import Customers from './src/screens/admin/Customers'
+import Auction from './src/screens/admin/Auctions'
+import Opportunities from './src/screens/admin/Opportunities'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -30,14 +32,24 @@ function BottomTabs({ setUser, user }) {
                 component={Dashboard}
                 options={{ tabBarLabel: 'Início', tabBarIcon: ({ color }) => <Home color={color} size={22} /> }}
             />
-            <Tab.Screen
-                name="Opportunities"
-                component={Opportunity}
-                options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
-            />
+
+            {user.userType === 'CUSTOMER' ? (
+                <Tab.Screen
+                    name="Opportunity"
+                    component={Opportunity}
+                    options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
+                />
+            ) : (
+                <Tab.Screen
+                    name="Opportunities"
+                    component={Opportunities}
+                    options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
+                />
+            )}
+
             <Tab.Screen
                 name="Auctions"
-                component={(props) => <Profile {...props} setUser={setUser} />}
+                component={Auction}
                 options={{ tabBarLabel: 'Arrematações', tabBarIcon: ({ color }) => <Gavel color={color} size={22} /> }}
             />
 
@@ -50,7 +62,7 @@ function BottomTabs({ setUser, user }) {
             ) : (
                 <Tab.Screen
                     name="Clients"
-                    component={Customers}
+                    component={(props) => <Customers {...props} setUser={setUser} />}
                     options={{ tabBarLabel: 'Clientes', tabBarIcon: ({ color }) => <User color={color} size={22} /> }}
                 />
             )}

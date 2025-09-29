@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Pressable, Text, Alert } from 'react-native';
 import Layout from './Layout';
 import { globalStyles } from '../../styles/styles';
 import api from "../../api/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import CustomerList from '../../components/admin/CustomersList';
 import CustomerForm from '../../components/admin/CustomerForm';
 
-function Customers() {
+function Customers({ setUser }) {
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -30,6 +31,16 @@ function Customers() {
         setCustomers(prev => [newCustomer, ...prev]);
     };
 
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('user');
+            setUser(null);
+        } catch (err) {
+            console.error('Erro ao sair: ', err);
+            Alert.alert('Erro', 'Não foi possível sair da conta');
+        }
+    };
+
     if (loading) {
         return (
             <View style={[globalStyles.flex1, { justifyContent: "center", alignItems: "center" }]}>
@@ -43,6 +54,13 @@ function Customers() {
             <View style={globalStyles.marginTop3}>
                 <CustomerList customers={customers} />
                 <CustomerForm onCustomerAdded={handleCustomerAdded} />
+
+                <Pressable
+                    style={[globalStyles.marginTop3, {borderColor: '#303036', borderWidth: 1, borderRadius: 8, padding: 12, width: '100%'}]}
+                    onPress={handleLogout}
+                >
+                    <Text style={{color: '#FAFAFA', textAlign: 'center'}}>Sair da conta</Text>
+                </Pressable>
             </View>
         </Layout>
     );
