@@ -106,7 +106,10 @@ function CustomerInvestimentProfileCard() {
                 propertyTypeIds: selectedPropertyTypeIds,
             }
 
-            await api.post('/investiment-profile', payload)
+            const response = await api.post('/investiment-profile', payload)
+            const profileId = response.data.id
+
+            await AsyncStorage.setItem('investmentProfileId', String(profileId))
             Alert.alert('Sucesso', 'Perfil de investimento salvo com sucesso!')
         } catch (err: any) {
             console.error('Submission error:', err)
