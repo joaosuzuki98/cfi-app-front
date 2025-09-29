@@ -37,7 +37,7 @@ function BottomTabs({ setUser, user }) {
             />
             <Tab.Screen
                 name="Auctions"
-                component={Profile}
+                component={(props) => <Profile {...props} setUser={setUser} />}
                 options={{ tabBarLabel: 'Arrematações', tabBarIcon: ({ color }) => <Gavel color={color} size={22} /> }}
             />
 

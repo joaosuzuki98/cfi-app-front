@@ -1,44 +1,33 @@
 import { View, Text, TextInput, Pressable, Alert } from "react-native"
 import { useEffect, useState } from "react"
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { globalStyles } from "../../styles/styles"
 import ContainerWithTitleAndSubtitle from "../ContainerWithTitleAndSubtitle"
+import api from "../../api/api"
 
-function CustomerPersonalInfoCard() {
+function CustomerPersonalInfoCard({ user, updateUser }) {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [phone, setPhone] = useState("")
 
     useEffect(() => {
-        const loadUser = async () => {
-            try {
-                const userJson = await AsyncStorage.getItem("user")
-                if (userJson) {
-                    const user = JSON.parse(userJson)
-                    setName(user.name || "")
-                    setEmail(user.email || "")
-                    setPhone(user.phone || "")
-                }
-            } catch (err) {
-                console.error("Erro ao carregar usuário:", err)
-                Alert.alert("Erro", "Não foi possível carregar os dados do usuário")
-            }
+        if (user) {
+            setName(user.name || "")
+            setEmail(user.email || "")
+            setPhone(user.phone || "")
         }
-        loadUser()
-    }, [])
+    }, [user])
 
     const handleSave = async () => {
         try {
-            const userJson = await AsyncStorage.getItem("user")
-            if (!userJson) return
-            const user = JSON.parse(userJson)
-            const updatedUser = { ...user, name, email, phone }
+            if (!user) return;
 
-            await AsyncStorage.setItem("user", JSON.stringify(updatedUser))
-            Alert.alert("Sucesso", "Informações atualizadas!")
+            const response = await api.put(`/customer/${user.id}`, { name, email, phone });
+
+            updateUser(response.data);
+            Alert.alert("Sucesso", "Informações atualizadas!");
         } catch (err) {
-            console.error("Erro ao salvar usuário:", err)
-            Alert.alert("Erro", "Não foi possível salvar os dados")
+            console.error("Erro ao salvar usuário:", err);
+            Alert.alert("Erro", "Não foi possível salvar os dados");
         }
     }
 
