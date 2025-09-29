@@ -9,6 +9,7 @@ import { Home, User, Gavel, Briefcase } from 'lucide-react-native'
 import Login from './src/screens/auth/Login'
 import Dashboard from './src/screens/admin/Dashboard'
 import Profile from './src/screens/admin/Profile'
+import Opportunity from './src/screens/admin/Opportunity'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -30,7 +31,7 @@ function BottomTabs({ setUser }) {
             />
             <Tab.Screen
                 name="Opportunities"
-                component={Profile}
+                component={Opportunity}
                 options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
             />
             <Tab.Screen
