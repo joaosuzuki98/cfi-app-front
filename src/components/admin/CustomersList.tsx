@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import { View, Text, TextInput, FlatList, ActivityIndicator, Pressable, StyleSheet, Modal, ScrollView } from "react-native";
-import api from "../../api/api";
+import { View, Text, TextInput, FlatList, Pressable, StyleSheet, Modal, ScrollView } from "react-native";
 import { globalStyles } from "../../styles/styles";
 
-function CustomerList() {
-    const [customers, setCustomers] = useState([]);
+function CustomerList({ customers }) {
     const [filteredCustomers, setFilteredCustomers] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [searchName, setSearchName] = useState('');
     const [searchEmail, setSearchEmail] = useState('');
 
@@ -15,22 +12,6 @@ function CustomerList() {
 
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-
-    useEffect(() => {
-        async function fetchCustomers() {
-            try {
-                const response = await api.get("/customer");
-                const customerList = response.data._embedded?.customerWithInvestmentProfileResponseList || [];
-                setCustomers(customerList);
-                setFilteredCustomers(customerList);
-            } catch (err) {
-                console.error("Erro ao buscar clientes:", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchCustomers();
-    }, []);
 
     useEffect(() => {
         const filtered = customers.filter(c =>
@@ -47,14 +28,6 @@ function CustomerList() {
         setSelectedCustomer(customer);
         setModalVisible(true);
     };
-
-    if (loading) {
-        return (
-            <View style={[globalStyles.flex1, { justifyContent: "center", alignItems: "center" }]}>
-                <ActivityIndicator size="large" color="#4ADE80" />
-            </View>
-        );
-    }
 
     return (
         <View style={[globalStyles.flex1, { padding: 10 }]}>
@@ -91,6 +64,11 @@ function CustomerList() {
                         <Text style={styles.cell}>{item.investmentProfile ? "Sim" : "Não"}</Text>
                     </Pressable>
                 )}
+                ListEmptyComponent={
+                    <Text style={{ color: "#aaa", textAlign: "center", marginTop: 20 }}>
+                        Nenhum cliente encontrado
+                    </Text>
+                }
             />
 
             <View style={styles.pagination}>
