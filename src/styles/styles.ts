@@ -50,6 +50,26 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 8,
     },
 
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 8,
+    },
+
+    checkboxLabel: {
+        fontSize: 16,
+        marginLeft: 10,
+        color: mainLightColor,
+    },
+
+    // Color
+    blackBgContainer: {
+        backgroundColor: "#000",
+        flex: 1,
+        padding: 20,
+        paddingTop: 60,
+    },
+
     // Spacing
     marginTop1: {
         marginTop: 10,

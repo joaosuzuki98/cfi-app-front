@@ -3,13 +3,14 @@ import { View } from 'react-native'
 import CustomerDetailsCard from '../../components/customer/CustomerDetailsCard'
 import CustomerPersonalInfoCard from '../../components/customer/CustomerPersonalInfoCard'
 import CustomerPasswordDetailsCard from '../../components/customer/CustomerPasswordDetailsCard'
+import EditInvestmentProfileForm from '../../components/customer/EditInvestmentProfileForm'
 import { globalStyles } from '../../styles/styles'
 
-function Profile() {
+function Profile({ setUser }) {
     return (
         <Layout title='Seu perfil'>
             <View style={globalStyles.marginTop3}>
-               <CustomerDetailsCard />
+               <CustomerDetailsCard setUser={setUser} />
             </View>
 
             <View style={globalStyles.marginTop3}>
@@ -18,6 +19,10 @@ function Profile() {
 
             <View style={globalStyles.marginTop2}>
                 <CustomerPasswordDetailsCard />
+            </View>
+
+            <View style={globalStyles.marginTop2}>
+                <EditInvestmentProfileForm />
             </View>
         </Layout>
     )
