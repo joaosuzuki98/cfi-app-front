@@ -10,11 +10,14 @@ import Login from './src/screens/auth/Login'
 import Dashboard from './src/screens/admin/Dashboard'
 import Profile from './src/screens/admin/Profile'
 import Opportunity from './src/screens/admin/Opportunity'
+import Customers from './src/screens/admin/Customers'
+import Auction from './src/screens/admin/Auctions'
+import Opportunities from './src/screens/admin/Opportunities'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
-function BottomTabs({ setUser }) {
+function BottomTabs({ setUser, user }) {
     return (
         <Tab.Navigator
             screenOptions={{
@@ -29,21 +32,40 @@ function BottomTabs({ setUser }) {
                 component={Dashboard}
                 options={{ tabBarLabel: 'Início', tabBarIcon: ({ color }) => <Home color={color} size={22} /> }}
             />
-            <Tab.Screen
-                name="Opportunities"
-                component={Opportunity}
-                options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
-            />
+
+            {user.userType === 'CUSTOMER' ? (
+                <Tab.Screen
+                    name="Opportunity"
+                    component={Opportunity}
+                    options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
+                />
+            ) : (
+                <Tab.Screen
+                    name="Opportunities"
+                    component={Opportunities}
+                    options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
+                />
+            )}
+
             <Tab.Screen
                 name="Auctions"
-                component={Profile}
+                component={Auction}
                 options={{ tabBarLabel: 'Arrematações', tabBarIcon: ({ color }) => <Gavel color={color} size={22} /> }}
             />
-            <Tab.Screen
-                name="Profile"
-                component={(props) => <Profile {...props} setUser={setUser} />}
-                options={{ tabBarLabel: 'Perfil', tabBarIcon: ({ color }) => <User color={color} size={22} /> }}
-            />
+
+            {user.userType === 'CUSTOMER' ? (
+                <Tab.Screen
+                    name="Profile"
+                    component={(props) => <Profile {...props} setUser={setUser} />}
+                    options={{ tabBarLabel: 'Perfil', tabBarIcon: ({ color }) => <User color={color} size={22} /> }}
+                />
+            ) : (
+                <Tab.Screen
+                    name="Clients"
+                    component={(props) => <Customers {...props} setUser={setUser} />}
+                    options={{ tabBarLabel: 'Clientes', tabBarIcon: ({ color }) => <User color={color} size={22} /> }}
+                />
+            )}
         </Tab.Navigator>
     )
 }
@@ -84,7 +106,7 @@ export default function App() {
                     </Stack.Screen>
                 ) : (
                     <Stack.Screen name="AppTabs">
-						{(props) => <BottomTabs {...props} setUser={setUser} />}
+						{(props) => <BottomTabs {...props} setUser={setUser} user={user} />}
 					</Stack.Screen>
                 )}
             </Stack.Navigator>

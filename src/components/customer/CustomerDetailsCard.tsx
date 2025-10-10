@@ -6,35 +6,17 @@ import { User, Clock, Gavel } from "lucide-react-native"
 import CircleIcon from "../CircleIcon"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-function CustomerDetailsCard({ setUser }) {
+function CustomerDetailsCard({ setUser, user }) {
     const handleLogout = async () => {
         try {
             await AsyncStorage.removeItem('user')
             setUser(null)
-        } catch (err: unknown) {
+        } catch (err) {
             console.error('Error ao sair: ', err)
             Alert.alert('Erro', 'Não foi possível sair da conta')
         }
     }
 
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
-
-    useEffect(() => {
-        const loadUser = async () => {
-            try {
-                const userJson = await AsyncStorage.getItem("user")
-                if (userJson) {
-                    const user = JSON.parse(userJson)
-                    setName(user.name || "")
-                    setEmail(user.email || "")
-                }
-            } catch (err) {
-                console.error("Erro ao carregar usuário:", err)
-            }
-        }
-        loadUser()
-    }, [])
     return (
         <Container>
             <CircleIcon
@@ -44,8 +26,8 @@ function CustomerDetailsCard({ setUser }) {
                 size={64}
                 backgroundColor="#FAFAFA"
             />
-            <Text style={{color: '#FAFAFA', fontWeight: '500', marginTop: 20, fontSize: 18}}>{ name }</Text>
-            <Text style={{color: '#A1A1AA', fontSize: 12}}>{ email }</Text>
+            <Text style={{color: '#FAFAFA', fontWeight: '500', marginTop: 20, fontSize: 18}}>{ user?.name }</Text>
+            <Text style={{color: '#A1A1AA', fontSize: 12}}>{ user?.email }</Text>
 
             <View style={[globalStyles.marginTop3, {width: '100%'}]}>
                 <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
