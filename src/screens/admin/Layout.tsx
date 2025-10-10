@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { globalStyles } from '../../styles/styles'
 
 type LayoutProp = {
@@ -10,10 +10,10 @@ type LayoutProp = {
 function Layout({ children, title }: LayoutProp) {
     return (
         <View style={globalStyles.mainContainer}>
-            <Text style={{ fontWeight: "bold", fontSize: 20, color: "white" }}>{ title }</Text>
-            <View>
+            <Text style={{ fontWeight: "bold", fontSize: 20, color: "white", paddingBottom: 12 }}>{ title }</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 { children }
-            </View>
+            </ScrollView>
         </View>
     )
 }

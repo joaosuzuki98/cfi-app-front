@@ -1,14 +1,24 @@
-import { Button } from '@react-navigation/elements'
-import { useNavigation } from '@react-navigation/native'
 import Layout from './Layout'
+import { View } from 'react-native'
+import CustomerDetailsCard from '../../components/customer/CustomerDetailsCard'
+import CustomerPersonalInfoCard from '../../components/customer/CustomerPersonalInfoCard'
+import CustomerPasswordDetailsCard from '../../components/customer/CustomerPasswordDetailsCard'
+import { globalStyles } from '../../styles/styles'
 
 function Profile() {
-    const navigation = useNavigation()
     return (
-        <Layout title='Perfil'>
-            <Button onPress={() => navigation.navigate('AdminDashboard')}>
-                Go to dashboard
-            </Button>
+        <Layout title='Seu perfil'>
+            <View style={globalStyles.marginTop3}>
+               <CustomerDetailsCard />
+            </View>
+
+            <View style={globalStyles.marginTop3}>
+                <CustomerPersonalInfoCard />
+            </View>
+
+            <View style={globalStyles.marginTop2}>
+                <CustomerPasswordDetailsCard />
+            </View>
         </Layout>
     )
 }
