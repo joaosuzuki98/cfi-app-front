@@ -1,45 +1,115 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, View } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { Home, User, Gavel, Briefcase } from 'lucide-react-native'
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import Login from './src/screens/auth/Login'
+import Dashboard from './src/screens/admin/Dashboard'
+import Profile from './src/screens/admin/Profile'
+import Opportunity from './src/screens/admin/Opportunity'
+import Customers from './src/screens/admin/Customers'
+import Auction from './src/screens/admin/Auctions'
+import Opportunities from './src/screens/admin/Opportunities'
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createNativeStackNavigator()
+const Tab = createBottomTabNavigator()
 
-  return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
+function BottomTabs({ setUser, user }) {
+    return (
+        <Tab.Navigator
+            screenOptions={{
+                headerShown: false,
+                tabBarStyle: { backgroundColor: '#17171C' },
+                tabBarActiveTintColor: '#4ADE80',
+                tabBarInactiveTintColor: '#A1A1AA',
+            }}
+        >
+            <Tab.Screen
+                name="Dashboard"
+                component={Dashboard}
+                options={{ tabBarLabel: 'Início', tabBarIcon: ({ color }) => <Home color={color} size={22} /> }}
+            />
+
+            {user.userType === 'CUSTOMER' ? (
+                <Tab.Screen
+                    name="Opportunity"
+                    component={Opportunity}
+                    options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
+                />
+            ) : (
+                <Tab.Screen
+                    name="Opportunities"
+                    component={Opportunities}
+                    options={{ tabBarLabel: 'Oportunidades', tabBarIcon: ({ color }) => <Briefcase color={color} size={22} /> }}
+                />
+            )}
+
+            <Tab.Screen
+                name="Auctions"
+                component={Auction}
+                options={{ tabBarLabel: 'Arrematações', tabBarIcon: ({ color }) => <Gavel color={color} size={22} /> }}
+            />
+
+            {user.userType === 'CUSTOMER' ? (
+                <Tab.Screen
+                    name="Profile"
+                    component={(props) => <Profile {...props} setUser={setUser} />}
+                    options={{ tabBarLabel: 'Perfil', tabBarIcon: ({ color }) => <User color={color} size={22} /> }}
+                />
+            ) : (
+                <Tab.Screen
+                    name="Clients"
+                    component={(props) => <Customers {...props} setUser={setUser} />}
+                    options={{ tabBarLabel: 'Clientes', tabBarIcon: ({ color }) => <User color={color} size={22} /> }}
+                />
+            )}
+        </Tab.Navigator>
+    )
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+export default function App() {
+    const [user, setUser] = useState(null)
+    const [loading, setLoading] = useState(true)
 
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
+    useEffect(() => {
+        async function checkUser() {
+            try {
+                const userJson = await AsyncStorage.getItem('user')
+                if (userJson) setUser(JSON.parse(userJson))
+            } catch (err) {
+                console.error('Erro ao ler usuário:', err)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        checkUser()
+    }, [])
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#4ADE80" />
+            </View>
+        )
+    }
+
+    return (
+        <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                {!user ? (
+                    <Stack.Screen name="Login">
+                        {(props) => <Login {...props} setUser={setUser} />}
+                    </Stack.Screen>
+                ) : (
+                    <Stack.Screen name="AppTabs">
+						{(props) => <BottomTabs {...props} setUser={setUser} user={user} />}
+					</Stack.Screen>
+                )}
+            </Stack.Navigator>
+        </NavigationContainer>
+    )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default App;
